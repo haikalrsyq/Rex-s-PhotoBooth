@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rex's Photobooth - Landing Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #7CB9E8;
+            text-align: center;
+            padding: 20px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        body.dark-mode {
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+        h1 {
+            color: #074799;
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 1.2rem;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .landing-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 80vh;
+        }
+        .cta-button {
+            background-color: #074799;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .cta-button:hover {
+            background-color: #052e64;
+            transform: scale(1.05);
+        }
+        .mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #074799;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .mode-toggle:hover {
+            background-color: #052e64;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading" style="display: none;">
+        <div class="spinner"></div>
+    </div>
+    <button class="mode-toggle" onclick="toggleMode()">Dark Mode</button>
+    <div class="landing-container">
+        <div data-aos="fade-up" data-aos-duration="1000"></div>
+        <h1>Selamat Datang di Rex's Photobooth</h1>
+        <p>Ambil foto dengan berbagai filter dan frame menarik. Mulai petualangan fotomu sekarang!</p>
+        <button class="cta-button" onclick="goToPhotobooth()">Mulai Photobooth</button>
+    </div>
+    <script>
+        // Dark Mode / Light Mode
+        function toggleMode() {
+            const body = document.body;
+            const modeToggle = document.querySelector('.mode-toggle');
+            body.classList.toggle('dark-mode');
+            if (body.classList.contains('dark-mode')) {
+                modeToggle.textContent = 'Light Mode';
+            } else {
+                modeToggle.textContent = 'Dark Mode';
+            }
+        }
+
+        // Navigasi ke halaman photobooth
+        function goToPhotobooth() {
+            window.location.href = 'photobooth.html';
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+    AOS.init();
+</script>
+</body>
+</html>

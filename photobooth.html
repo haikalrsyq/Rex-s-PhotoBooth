@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rex's Photobooth</title>
+    <style>
+        /* Responsive Design untuk Mobile */
+@media (max-width: 768px) {
+    body {
+        padding: 10px; /* Kurangi padding untuk layar kecil */
+    }
+
+    h1 {
+        font-size: 2rem; /* Perkecil ukuran judul */
+    }
+
+    .main-container {
+        flex-direction: column; /* Ubah layout ke vertikal */
+        align-items: center;
+        gap: 10px; /* Kurangi jarak antar elemen */
+    }
+
+    .photo-options, .preview-container, .adjustment-container {
+        width: 100%; /* Lebar penuh untuk layar kecil */
+        max-width: 400px; /* Batasi lebar maksimum */
+        margin-bottom: 10px; /* Tambahkan jarak antar elemen */
+    }
+
+    .preview-container {
+        order: -1; /* Pindahkan preview ke atas */
+    }
+
+    .filter-group, .frame-group, .adjustment-control {
+        flex-direction: column; /* Ubah layout tombol filter ke vertikal */
+        align-items: center;
+    }
+
+    .filter-group button, .frame-group button, .adjustment-control button {
+        width: 100%; /* Lebar penuh untuk tombol */
+        margin: 5px 0; /* Jarak antar tombol */
+    }
+
+    .instructions {
+        padding: 10px; /* Kurangi padding untuk instruksi */
+    }
+
+    .mode-toggle {
+        top: 10px; /* Sesuaikan posisi tombol toggle */
+        right: 10px;
+        padding: 8px; /* Perkecil padding */
+        font-size: 14px; /* Perkecil ukuran teks */
+    }
+
+    .result-container {
+        padding: 10px; /* Kurangi padding untuk halaman hasil */
+    }
+
+    .result-container h1 {
+        font-size: 1.5rem; /* Perkecil ukuran judul hasil */
+    }
+
+    .result-container button {
+        width: 100%; /* Lebar penuh untuk tombol */
+        margin: 5px 0; /* Jarak antar tombol */
+    }
+}
+        body {
+            font-family: Arial, sans-serif;
+            background : linear-gradient(135deg, #F8FAFC, #6b737a);
+            padding: 20px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        body.dark-mode {
+            background: linear-gradient(135deg, #1a1a1a, #333);
+            color: #ffffff;
+        }
+        h1 {
+            color: #074799;
+        }
+        body.dark-mode h1 {
+            color: #4da8ff;
+        }
+        .main-container, .photo-options, .preview-container, .adjustment-container, .instructions {
+            background-color: #BCCCDC;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        body.dark-mode .main-container, 
+        body.dark-mode .photo-options, 
+        body.dark-mode .preview-container, 
+        body.dark-mode .adjustment-container, 
+        body.dark-mode .instructions {
+            background-color: #2a2a2a;
+            color: #ffffff;
+        }
+        h1 {
+            color: #074799;
+        }
+        .main-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        .photo-options {
+            background-color: #BCCCDC;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            display: inline-block;
+            width: 200px;
+        }
+        .preview-container {
+            background-color: #BCCCDC;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            display: inline-block;
+            position: relative;
+        }
+        .adjustment-container {
+            background-color: #BCCCDC;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            display: inline-block;
+            width: 300px;
+        }
+        video, canvas {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        .button-group, .filter-group, .frame-group {
+            margin-top: 10px;
+        }
+        button {
+            background-color: #406aa1;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #406aa1;
+        }
+        .gallery {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .photo-strip {
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 10px;
+            display: inline-block;
+            position: relative;
+        }
+        .countdown {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 50px;
+            font-weight: bold;
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+        .frame-option {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            margin: 5px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid black;
+        }
+        .custom-frame {
+            margin-top: 10px;
+        }
+        .custom-frame input {
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .adjustment-control {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .adjustment-group input[type="range"] {
+            width: 150px;
+            margin: 0 10px;
+        }
+        .reset-button {
+            background-color: #406aa1;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .reset-button:hover {
+            background-color: #0066e4;
+        }
+        .result-container {
+            display: none; /* Sembunyikan halaman hasil secara default */
+        }
+        .instructions {
+            background-color: #BCCCDC;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            margin-top: 20px;
+            text-align: left;
+            color: white;
+        }
+        .mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #406aa1;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .mode-toggle:hover {
+            background-color: #000000;
+        }
+    </style>
+</head>
+<body>
+    <button class="mode-toggle" onclick="toggleMode()">Dark Mode</button>
+    <h1>Rex's Photobooth</h1>
+    <div class="main-container">
+        <div class="photo-options">
+            <h3>Pilih Jumlah Foto</h3>
+            <div class="button-group">
+                <button onclick="startPhotoSession(1)">1 Foto</button>
+                <button onclick="startPhotoSession(2)">2 Foto</button>
+                <button onclick="startPhotoSession(3)">3 Foto</button>
+                <button onclick="startPhotoSession(4)">4 Foto</button>
+                <button onclick="startPhotoSession(5)">5 Foto</button>
+            </div>
+        </div>
+        <div class="preview-container">
+            <video id="video" autoplay playsinline></video>
+            <canvas id="canvas"></canvas>
+            <div id="countdown" class="countdown"></div>
+            
+            <div class="filter-group">
+                <button onclick="applyFilter('none')">Normal</button>
+                <button onclick="applyFilter('grayscale(100%)')">Grayscale</button>
+                <button onclick="applyFilter('sepia(100%)')">Sepia</button>
+                <button onclick="applyFilter('saturate(200%)')">Saturate</button>
+                <button onclick="applyFilter('brightness(150%)')">Brightness</button>
+                <button onclick="applyFilter('contrast(200%)')">Contrast</button>
+                <button onclick="applyFilter('invert(100%)')">Invert</button>
+                <button onclick="applyFilter('hue-rotate(90deg)')">Hue Rotate</button>
+                <button onclick="applyFilter('blur(5px)')">Blur</button>
+                <button onclick="applyFilter('opacity(80%)')">Opacity</button>
+                <button onclick="applyFilter('drop-shadow(10px 10px 10px rgba(0, 0, 0, 0.5))')">Drop Shadow</button>
+            </div>
+            <div class="frame-group">
+                <p>Pilih Warna Frame:</p>
+                <span class="frame-option" style="background-color: pink;" onclick="setFrameColor('pink')"></span>
+                <span class="frame-option" style="background-color: lightblue;" onclick="setFrameColor('lightblue')"></span>
+                <span class="frame-option" style="background-color: yellow;" onclick="setFrameColor('yellow')"></span>
+                <span class="frame-option" style="background-color: green;" onclick="setFrameColor('green')"></span>
+            </div>
+            <div class="custom-frame">
+                <p>Custom Warna Frame:</p>
+                <input type="color" id="customFrameColor" onchange="setCustomFrameColor(this.value)">
+            </div>
+        </div>
+        <div class="adjustment-container">
+            <p>Atur Adjustments:</p>
+            <div class="adjustment-control">
+                <label>Exposure:</label>
+                <input type="range" id="exposure" min="0" max="200" value="100" oninput="updateAdjustments()">
+                <button class="reset-button" onclick="resetAdjustment('exposure')">Reset</button>
+            </div>
+            <div class="adjustment-control">
+                <label>Contrast:</label>
+                <input type="range" id="contrast" min="0" max="200" value="100" oninput="updateAdjustments()">
+                <button class="reset-button" onclick="resetAdjustment('contrast')">Reset</button>
+            </div>
+            <div class="adjustment-control">
+                <label>Saturation:</label>
+                <input type="range" id="saturation" min="0" max="200" value="100" oninput="updateAdjustments()">
+                <button class="reset-button" onclick="resetAdjustment('saturation')">Reset</button>
+            </div>
+        </div>
+    </div>
+    <div class="instructions">
+        <h3>Cara Menggunakan Photobooth:</h3>
+        <ol>
+            <li>Pilih jumlah foto yang ingin diambil (1 hingga 5).</li>
+            <li>Pilih filter yang diinginkan dari tombol filter.</li>
+            <li>Pilih warna frame atau gunakan custom color.</li>
+            <li>Atur adjustments seperti exposure, contrast, dan saturation sesuai keinginan.</li>
+            <li>Klik tombol jumlah foto untuk memulai pengambilan foto.</li>
+            <li>Setelah foto diambil, hasil akan ditampilkan di halaman hasil.</li>
+            <li>Anda dapat mendownload foto atau kembali ke photobooth untuk mengambil foto lagi.</li>
+        </ol>
+    </div>
+    <div class="result-container" id="resultContainer">
+        <h1>Hasil Foto</h1>
+        <div id="resultImageContainer"></div>
+        <button onclick="downloadPhoto(resultImageSrc)">Download Foto</button>
+        <button onclick="goBack()">Kembali ke Photobooth</button>
+    </div>
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const countdown = document.getElementById('countdown');
+        const context = canvas.getContext('2d');
+        const resultContainer = document.getElementById('resultContainer');
+        const resultImageContainer = document.getElementById('resultImageContainer');
+        let resultImageSrc = '';
+        let images = [];
+        let currentFilter = 'none';
+        let frameColor = 'white';
+
+        // Nilai default adjustments
+        let adjustments = {
+            exposure: 100,
+            contrast: 100,
+            saturation: 100,
+        };
+
+        // Dark Mode / Light Mode
+        function toggleMode() {
+            const body = document.body;
+            const modeToggle = document.querySelector('.mode-toggle');
+            body.classList.toggle('dark-mode');
+            if (body.classList.contains('dark-mode')) {
+                modeToggle.textContent = 'Light Mode';
+            } else {
+                modeToggle.textContent = 'Dark Mode';
+            }
+        }
+
+        async function startCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+                video.srcObject = stream;
+            } catch (err) {
+                alert('Akses kamera ditolak. Harap izinkan akses kamera di browser Anda.');
+            }
+        }
+        startCamera();
+
+        function startPhotoSession(photoCount) {
+            images = [];
+            capturePhotos(photoCount, 0);
+        }
+
+        function capturePhotos(count, index) {
+            if (index >= count) {
+                mergePhotos();
+                return;
+            }
+            let timeLeft = 3;
+            countdown.style.display = 'block';
+            countdown.innerText = timeLeft;
+            let countdownInterval = setInterval(() => {
+                timeLeft--;
+                countdown.innerText = timeLeft;
+                if (timeLeft === 0) {
+                    clearInterval(countdownInterval);
+                    countdown.style.display = 'none';
+                    takePhoto();
+                    capturePhotos(count, index + 1);
+                }
+            }, 1000);
+        }
+
+        function takePhoto() {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.filter = currentFilter; // Terapkan filter saat mengambil foto
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            images.push(canvas.toDataURL('image/png'));
+        }
+
+        function mergePhotos() {
+            if (images.length === 0) return;
+            let mergedCanvas = document.createElement('canvas');
+            let mergedContext = mergedCanvas.getContext('2d');
+            mergedCanvas.width = canvas.width + 40; // Tambahkan ruang untuk frame
+            mergedCanvas.height = canvas.height * images.length + 40; // Tambahkan ruang untuk frame
+            mergedContext.fillStyle = frameColor; // Warna frame
+            mergedContext.fillRect(0, 0, mergedCanvas.width, mergedCanvas.height); // Gambar frame
+            images.forEach((imgSrc, index) => {
+                let img = new Image();
+                img.src = imgSrc;
+                img.onload = () => {
+                    // Terapkan filter dan adjustments pada gambar yang digabungkan
+                    mergedContext.filter = currentFilter;
+                    applyAdjustments(mergedContext); // Terapkan adjustments
+                    // Gambar foto di dalam frame
+                    mergedContext.drawImage(img, 20, 20 + index * canvas.height, canvas.width, canvas.height);
+
+                    // Tambahkan tanggal dan jam
+                    const now = new Date();
+                    const dateTimeString = now.toLocaleString();
+                    mergedContext.font = '20px Arial';
+                    mergedContext.fillStyle = 'white';
+                    mergedContext.textAlign = 'center';
+                    mergedContext.fillText(dateTimeString, mergedCanvas.width / 2, mergedCanvas.height - 20);
+
+                    if (index === images.length - 1) {
+                        resultImageSrc = mergedCanvas.toDataURL('image/png');
+                        showResultPage(resultImageSrc);
+                    }
+                };
+            });
+        }
+
+        function showResultPage(imageSrc) {
+            // Sembunyikan halaman utama dan tampilkan halaman hasil
+            document.querySelector('.main-container').style.display = 'none';
+            document.querySelector('.instructions').style.display = 'none';
+            resultContainer.style.display = 'block';
+            resultImageContainer.innerHTML = `<img src="${imageSrc}" style="border: 10px solid ${frameColor}; max-width: 100%;">`;
+        }
+
+        function goBack() {
+            // Kembali ke halaman utama
+            resultContainer.style.display = 'none';
+            document.querySelector('.main-container').style.display = 'flex';
+            document.querySelector('.instructions').style.display = 'block';
+        }
+
+        function applyFilter(filter) {
+            currentFilter = filter;
+            // Terapkan filter langsung ke video untuk pratinjau
+            video.style.filter = filter;
+        }
+
+        function setFrameColor(color) {
+            frameColor = color;
+        }
+
+        function setCustomFrameColor(color) {
+            frameColor = color;
+        }
+
+        function updateAdjustments() {
+            adjustments.exposure = document.getElementById('exposure').value;
+            adjustments.contrast = document.getElementById('contrast').value;
+            adjustments.saturation = document.getElementById('saturation').value;
+
+            // Update preview adjustments pada video
+            applyPreviewAdjustments();
+        }
+
+        function resetAdjustment(adjustment) {
+            const defaultValue = {
+                exposure: 100,
+                contrast: 100,
+                saturation: 100,
+            };
+            document.getElementById(adjustment).value = defaultValue[adjustment];
+            adjustments[adjustment] = defaultValue[adjustment];
+            updateAdjustments();
+        }
+
+        function applyPreviewAdjustments() {
+            // Terapkan adjustments pada video
+            video.style.filter = `
+                brightness(${adjustments.exposure}%)
+                contrast(${adjustments.contrast}%)
+                saturate(${adjustments.saturation}%)
+            `;
+        }
+
+        function applyAdjustments(context) {
+            // Terapkan adjustments menggunakan CSS filter dan manipulasi pixel
+            context.filter = `
+                brightness(${adjustments.exposure}%)
+                contrast(${adjustments.contrast}%)
+                saturate(${adjustments.saturation}%)
+            `;
+        }
+
+        function downloadPhoto(imageSrc) {
+            const link = document.createElement('a');
+            link.href = imageSrc;
+            link.download = 'photo.png';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+    AOS.init();
+</script>
+</body>
+</html>
