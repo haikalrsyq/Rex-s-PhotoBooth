@@ -23,6 +23,23 @@
         gap: 10px; /* Kurangi jarak antar elemen */
     }
 
+    .mirror-toggle {
+        background-color: #074799;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        font-size: 1rem;
+        cursor: pointer;
+        margin-top: 20px;
+        transition: background-color 0.3s, transform 0.2s;
+    }
+    
+    .mirror-toggle:hover {
+        background-color: #052e64;
+        transform: scale(1.05);
+    }
+
     .photo-options, .preview-container, .adjustment-container {
         width: 100%; /* Lebar penuh untuk layar kecil */
         max-width: 400px; /* Batasi lebar maksimum */
@@ -243,6 +260,7 @@
     </style>
 </head>
 <body>
+    <button class="mirror-toggle" onclick="toggleMirror()">🔁 Mirror</button>
     <button class="mode-toggle" onclick="toggleMode()">Dark Mode</button>
     <h1>Rex's Photobooth</h1>
     <div class="main-container">
@@ -507,6 +525,31 @@
             document.body.removeChild(link);
         }
         
+        let isMirrored = false; // Status mirror (default: tidak aktif)
+
+function toggleMirror() {
+    const video = document.getElementById('video'); // Elemen video
+    const canvas = document.getElementById('canvas'); // Elemen canvas
+    const photo = document.getElementById('photo'); // Elemen foto
+
+    isMirrored = !isMirrored; // Toggle status mirror
+
+    // Terapkan efek mirror pada video, canvas, dan foto
+    if (isMirrored) {
+        video.style.transform = 'scaleX(-1)';
+        canvas.style.transform = 'scaleX(-1)';
+        photo.style.transform = 'scaleX(-1)';
+    } else {
+        video.style.transform = 'scaleX(1)';
+        canvas.style.transform = 'scaleX(1)';
+        photo.style.transform = 'scaleX(1)';
+    }
+}
+
+function goToPhotobooth() {
+    window.location.href = 'photobooth.html';
+}
+
     </script>
     <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
 <script>
